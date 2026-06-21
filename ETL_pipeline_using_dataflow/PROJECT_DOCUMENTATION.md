@@ -64,33 +64,33 @@ Without efficient pipelines, organizations face:
 The GCP Dataflow Pipeline project provides a complete, end-to-end solution for data processing:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    GCP Dataflow Pipeline                         │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                   │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │
-│  │   Batch      │  │  Streaming   │  │  Config      │           │
-│  │  Pipelines   │  │  Pipelines   │  │  Management  │           │
-│  │              │  │              │  │              │           │
-│  │ • Word Count │  │ • Events     │  │ • Batch      │           │
-│  │ • ETL        │  │ • Sessions   │  │ • Streaming  │           │
-│  │   Transform  │  │              │  │ • Local Dev  │           │
-│  └──────────────┘  └──────────────┘  └──────────────┘           │
-│                                                                   │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │         Cloud Composer Orchestration (Airflow)          │   │
-│  │                                                          │   │
-│  │  • Batch DAG    • Streaming DAG    • ETL DAG           │   │
-│  │  • Scheduling   • Monitoring       • Error Handling    │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│                                                                   │
-│  ┌──────────────────────────────────────────────────────────┐   │
-│  │      Google Cloud Platform Integration Layer            │   │
-│  │                                                          │   │
-│  │  Pub/Sub • BigQuery • Cloud Storage • Dataflow         │   │
-│  └──────────────────────────────────────────────────────────┘   │
-│                                                                   │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                    GCP Dataflow Pipeline                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐             │
+│  │    Batch     │   │  Streaming   │   │   Config     │             │
+│  │  Pipelines   │   │  Pipelines   │   │  Management  │             │
+│  │              │   │              │   │              │             │
+│  │ • Word Count │   │ • Events     │   │ • Batch      │             │
+│  │ • ETL        │   │ • Sessions   │   │ • Streaming  │             │
+│  │   Transform  │   │              │   │ • Local Dev  │             │
+│  └──────────────┘   └──────────────┘   └──────────────┘             │
+│                                                                     │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │        Cloud Composer Orchestration (Airflow)                 │  │
+│  │                                                               │  │
+│  │  • Batch DAG   • Streaming DAG   • ETL DAG                    │  │
+│  │  • Scheduling  • Monitoring      • Error Handling             │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │       Google Cloud Platform Integration Layer                 │  │
+│  │                                                               │  │
+│  │  • Pub/Sub   • BigQuery   • Cloud Storage   • Dataflow        │  │
+│  └───────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Key Solution Components
