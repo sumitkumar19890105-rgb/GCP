@@ -24,39 +24,70 @@ logger = logging.getLogger(__name__)
 
 
 class ValidateRecordFn(beam.DoFn):
-    """Validate input records"""
+    """
+    Validate input records - ensures data quality before processing.
+    
+    This transformation:
+    - Checks for required fields
+    - Validates data types
+    - Logs warnings for invalid records
+    - Filters out bad data early in the pipeline
+    """
     
     def process(self, element):
-        """Validate required fields"""
+        """Validate required fields and data types
+        
+        Args:
+            element: Dictionary record from input source
+            
+        Yields:
+            dict: Valid record, or nothing if validation fails
+        """
         try:
-            # Example validation - customize based on your schema
+            # Define which fields are mandatory
             required_fields = ['id', 'timestamp', 'value']
             
+            # Check that all required fields are present
             if not all(field in element for field in required_fields):
                 logger.warning(f"Record missing required fields: {element}")
-                return
+                return  # Skip this record (filter it out)
             
-            # Validate data types
+            # Validate that numeric field is actually a number
             if not isinstance(element['value'], (int, float)):
                 logger.warning(f"Invalid value type: {element}")
-                return
+                return  # Skip this record
             
+            # If all validations pass, emit the record
             yield element
             
         except Exception as e:
+            # Catch any unexpected errors and log them
             logger.error(f"Validation error: {e}")
 
 
 class TransformFn(beam.DoFn):
-    """Transform data"""
+    """Apply business logic transformations to records.
+    
+    This transformation:
+    - Calculates derived fields (processed_value)
+    - Adds processing metadata
+    - Enriches records with computed data
+    """
     
     def process(self, element):
-        """Apply transformations"""
+        """Apply transformations to create new fields
+        
+        Args:
+            element: Validated input record
+            
+        Yields:
+            dict: Transformed record with new computed fields
+        """
         try:
-            # Add computed fields
-            element['processed_value'] = element['value'] * 1.1
-            element['processing_date'] = datetime.utcnow().isoformat()
-            element['data_quality_score'] = 0.95
+            # Calculate derived metrics
+            element['processed_value'] = element['value'] * 1.1  # Example: Apply 10% multiplier
+            element['processing_date'] = datetime.utcnow().isoformat()  # Record when processed
+            element['data_quality_score'] = 0.95  # Could be calculated based on validations
             
             yield element
             
@@ -65,15 +96,28 @@ class TransformFn(beam.DoFn):
 
 
 class EnrichDataFn(beam.DoFn):
-    """Enrich data with additional information"""
+    """Enrich records with additional operational metadata.
+    
+    This transformation adds:
+    - Batch run identifiers for tracking
+    - Source system information
+    - Processing timestamps for auditing
+    """
     
     def process(self, element):
-        """Add enrichment fields"""
+        """Add enrichment fields for operational tracking
+        
+        Args:
+            element: Transformed record
+            
+        Yields:
+            dict: Enriched record with operational metadata
+        """
         try:
-            # Add enrichment logic
-            element['batch_id'] = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-            element['source_system'] = 'batch_pipeline'
-            element['enrichment_timestamp'] = datetime.utcnow().isoformat()
+            # Add operational metadata for tracking and audit trails
+            element['batch_id'] = datetime.utcnow().strftime('%Y%m%d_%H%M%S')  # Unique batch identifier
+            element['source_system'] = 'batch_pipeline'  # Track which system produced this
+            element['enrichment_timestamp'] = datetime.utcnow().isoformat()  # Audit trail
             
             yield element
             
@@ -82,13 +126,25 @@ class EnrichDataFn(beam.DoFn):
 
 
 def run(argv=None):
-    """Run the batch transformation pipeline"""
+    """Execute the batch data transformation pipeline.
+    
+    Pipeline flow:
+    1. Read data from BigQuery (source table)
+    2. Validate each record (quality checks)
+    3. Transform records (business logic)
+    4. Enrich with metadata (audit trail)
+    5. Write to BigQuery (output table)
+    
+    Args:
+        argv: Command-line arguments
+    """
     
     parser = argparse.ArgumentParser(
         description='Batch Data Transformation Pipeline'
     )
     
-    # Required arguments
+    # ====== Data Source/Destination ======
+    # Define where input data comes from and where output goes
     parser.add_argument(
         '--input_table',
         dest='input_table',
@@ -102,7 +158,7 @@ def run(argv=None):
         help='Output BigQuery table (e.g., project:dataset.output_table)'
     )
     
-    # Dataflow arguments
+    # ====== Execution Configuration ======
     parser.add_argument(
         '--runner',
         dest='runner',
@@ -116,10 +172,12 @@ def run(argv=None):
     
     known_args, pipeline_args = parser.parse_known_args(argv)
     
-    # Create pipeline options
+    # ====== Pipeline Options ======
+    # Configure how the pipeline runs
     options = PipelineOptions(pipeline_args)
     options.view_as(beam.options.pipeline_options.StandardOptions).runner = known_args.runner
     
+    # Configure for cloud execution if using DataflowRunner
     if known_args.runner == 'DataflowRunner':
         google_cloud_options = options.view_as(GoogleCloudOptions)
         google_cloud_options.project = known_args.project
@@ -129,35 +187,52 @@ def run(argv=None):
         worker_options = options.view_as(WorkerOptions)
         worker_options.num_workers = known_args.num_workers
     
-    # Define output schema
+    # ====== Output BigQuery Schema ======
+    # Define the structure of records in the output table
+    # Each line represents: field_name:type:mode
     output_schema = '''
-        id:STRING,
-        timestamp:TIMESTAMP,
-        value:FLOAT64,
-        processed_value:FLOAT64,
-        processing_date:TIMESTAMP,
-        data_quality_score:FLOAT64,
-        batch_id:STRING,
-        source_system:STRING,
-        enrichment_timestamp:TIMESTAMP
+        id:STRING,                           # Unique identifier
+        timestamp:TIMESTAMP,                 # Original timestamp
+        value:FLOAT64,                       # Original numeric value
+        processed_value:FLOAT64,             # Calculated value
+        processing_date:TIMESTAMP,           # When it was processed
+        data_quality_score:FLOAT64,          # Quality metric
+        batch_id:STRING,                     # Which batch run this came from
+        source_system:STRING,                # Which system produced it
+        enrichment_timestamp:TIMESTAMP       # When enrichment occurred
     '''
     
-    # Build and run pipeline
+    # ====== BUILD AND EXECUTE PIPELINE ======
     with beam.Pipeline(options=options) as p:
-        (p
-         | 'ReadFromBigQuery' >> ReadFromBigQuery(
-             table=known_args.input_table,
-             use_standard_sql=True
-         )
-         | 'Validate' >> beam.ParDo(ValidateRecordFn())
-         | 'Transform' >> beam.ParDo(TransformFn())
-         | 'Enrich' >> beam.ParDo(EnrichDataFn())
-         | 'WriteToBigQuery' >> WriteToBigQuery(
-             table=known_args.output_table,
-             schema=output_schema,
-             create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
-             write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE
-         )
+        (
+            p
+            # STAGE 1: Read data from BigQuery table
+            # This reads all rows from the specified input table
+            | 'ReadFromBigQuery' >> ReadFromBigQuery(
+                table=known_args.input_table,
+                use_standard_sql=True  # Use modern BigQuery SQL dialect
+            )
+            
+            # STAGE 2: Validate records
+            # Filters out records with missing fields or invalid data types
+            | 'Validate' >> beam.ParDo(ValidateRecordFn())
+            
+            # STAGE 3: Transform data
+            # Applies business logic (calculations, enrichment)
+            | 'Transform' >> beam.ParDo(TransformFn())
+            
+            # STAGE 4: Enrich with metadata
+            # Adds operational fields for tracking and auditing
+            | 'Enrich' >> beam.ParDo(EnrichDataFn())
+            
+            # STAGE 5: Write to BigQuery
+            # Writes transformed records to output table
+            | 'WriteToBigQuery' >> WriteToBigQuery(
+                table=known_args.output_table,
+                schema=output_schema,
+                create_disposition=beam.io.BigQueryDisposition.CREATE_IF_NEEDED,
+                write_disposition=beam.io.BigQueryDisposition.WRITE_TRUNCATE  # Replace existing data
+            )
         )
     
     logger.info("Batch transformation pipeline completed")

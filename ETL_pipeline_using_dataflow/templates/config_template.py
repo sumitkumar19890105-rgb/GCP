@@ -111,28 +111,50 @@ class LocalDevConfig(DataflowConfig):
 
 
 # ============================================================================
-# HELPER FUNCTIONS
+# HELPER FUNCTIONS - Create pipeline options easily
 # ============================================================================
 def get_pipeline_options(config_class, runner='DataflowRunner', **kwargs):
-    """Create pipeline options from configuration"""
+    """
+    Create Apache Beam pipeline options from a configuration class.
+    
+    This function encapsulates the boilerplate code for setting up
+    pipeline options, making it reusable across multiple pipelines.
+    
+    Args:
+        config_class: Configuration class (DataflowConfig, BatchPipelineConfig, etc.)
+        runner: Which runner to use ('DirectRunner' or 'DataflowRunner')
+        **kwargs: Additional pipeline options to override defaults
+        
+    Returns:
+        PipelineOptions: Configured options ready for use in pipeline
+        
+    Example:
+        options = get_pipeline_options(BatchPipelineConfig, runner='DataflowRunner')
+        with beam.Pipeline(options=options) as p:
+            # Build pipeline here
+    """
     from apache_beam.options.pipeline_options import (
         PipelineOptions,
         GoogleCloudOptions,
         WorkerOptions,
     )
     
-    config = config_class()
-    options = PipelineOptions(**kwargs)
+    config = config_class()  # Instantiate configuration
+    options = PipelineOptions(**kwargs)  # Create base options
     
+    # Configure for cloud Dataflow execution
     if runner == 'DataflowRunner':
+        # Set Google Cloud options
         gcp_options = options.view_as(GoogleCloudOptions)
         gcp_options.project = config.GCP_PROJECT_ID
         gcp_options.region = config.GCP_REGION
         gcp_options.temp_location = config.GCS_TEMP_LOCATION
         
+        # Enable streaming engine if supported by config
         if hasattr(config, 'ENABLE_STREAMING_ENGINE'):
             gcp_options.enable_streaming_engine = config.ENABLE_STREAMING_ENGINE
         
+        # Configure worker resources
         worker_options = options.view_as(WorkerOptions)
         worker_options.num_workers = config.NUM_WORKERS
         worker_options.max_num_workers = config.MAX_NUM_WORKERS
@@ -144,13 +166,16 @@ def get_pipeline_options(config_class, runner='DataflowRunner', **kwargs):
 # ============================================================================
 # ENVIRONMENT-BASED CONFIGURATION SELECTION
 # ============================================================================
+# This allows switching between environments using the ENVIRONMENT variable
+# Example: export ENVIRONMENT=development
 import os
 
-ENV = os.getenv('ENVIRONMENT', 'production')
+ENV = os.getenv('ENVIRONMENT', 'production')  # Default to production if not set
 
+# Select appropriate configuration based on environment
 if ENV == 'development':
-    CONFIG = LocalDevConfig
+    CONFIG = LocalDevConfig  # Use local development config
 elif ENV == 'staging':
-    CONFIG = DataflowConfig
+    CONFIG = DataflowConfig  # Use base config for staging
 else:
-    CONFIG = DataflowConfig
+    CONFIG = DataflowConfig  # Use base config for production (default)
