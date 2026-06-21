@@ -1,0 +1,52 @@
+{
+  "fields": [
+    {
+      "name": "window_start",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Window start time"
+    },
+    {
+      "name": "window_end",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Window end time"
+    },
+    {
+      "name": "region",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Geographic region"
+    },
+    {
+      "name": "total_sales",
+      "type": "FLOAT64",
+      "mode": "REQUIRED",
+      "description": "Total sales amount in USD"
+    },
+    {
+      "name": "transaction_count",
+      "type": "INT64",
+      "mode": "REQUIRED",
+      "description": "Number of transactions"
+    },
+    {
+      "name": "avg_transaction_value",
+      "type": "FLOAT64",
+      "mode": "REQUIRED",
+      "description": "Average transaction value"
+    },
+    {
+      "name": "top_category",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "Most popular product category"
+    },
+    {
+      "name": "processing_time",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "When the data was processed"
+    }
+  ]
+}

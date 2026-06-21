@@ -1,0 +1,70 @@
+{
+  "fields": [
+    {
+      "name": "window_start",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Window start time"
+    },
+    {
+      "name": "window_end",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Window end time"
+    },
+    {
+      "name": "sensor_id",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Sensor identifier"
+    },
+    {
+      "name": "device_id",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "IoT device identifier"
+    },
+    {
+      "name": "location",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Physical location of sensor"
+    },
+    {
+      "name": "avg_temperature",
+      "type": "FLOAT64",
+      "mode": "REQUIRED",
+      "description": "Average temperature in Celsius"
+    },
+    {
+      "name": "avg_humidity",
+      "type": "FLOAT64",
+      "mode": "REQUIRED",
+      "description": "Average humidity percentage"
+    },
+    {
+      "name": "max_temperature",
+      "type": "FLOAT64",
+      "mode": "REQUIRED",
+      "description": "Maximum temperature in window"
+    },
+    {
+      "name": "min_temperature",
+      "type": "FLOAT64",
+      "mode": "REQUIRED",
+      "description": "Minimum temperature in window"
+    },
+    {
+      "name": "reading_count",
+      "type": "INT64",
+      "mode": "REQUIRED",
+      "description": "Number of readings in window"
+    },
+    {
+      "name": "processing_time",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "When the data was processed"
+    }
+  ]
+}

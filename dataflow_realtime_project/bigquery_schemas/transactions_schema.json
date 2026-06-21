@@ -1,0 +1,58 @@
+{
+  "fields": [
+    {
+      "name": "transaction_id",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Unique transaction identifier"
+    },
+    {
+      "name": "user_id",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Customer ID"
+    },
+    {
+      "name": "timestamp",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Event time in RFC 3339 format"
+    },
+    {
+      "name": "product_category",
+      "type": "STRING",
+      "mode": "REQUIRED",
+      "description": "Category of purchased item"
+    },
+    {
+      "name": "amount_usd",
+      "type": "FLOAT64",
+      "mode": "REQUIRED",
+      "description": "Transaction amount in USD"
+    },
+    {
+      "name": "region",
+      "type": "STRING",
+      "mode": "NULLABLE",
+      "description": "Geographic region"
+    },
+    {
+      "name": "window_start",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Window start time"
+    },
+    {
+      "name": "window_end",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "Window end time"
+    },
+    {
+      "name": "processing_time",
+      "type": "TIMESTAMP",
+      "mode": "REQUIRED",
+      "description": "When the data was processed"
+    }
+  ]
+}
