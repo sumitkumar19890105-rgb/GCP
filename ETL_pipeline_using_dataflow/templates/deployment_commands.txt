@@ -1,0 +1,156 @@
+"""
+Dataflow Job Deployment Templates
+Ready-to-use commands for different scenarios
+"""
+
+# ============================================================================
+# 1. BATCH PIPELINE DEPLOYMENT COMMANDS
+# ============================================================================
+
+# Local DirectRunner (for testing)
+# python batch_word_count_pipeline.py \
+#     --runner DirectRunner \
+#     --input local_data/*.txt \
+#     --output <project>:<dataset>.word_count_output
+
+# Cloud Dataflow Runner
+# python batch_word_count_pipeline.py \
+#     --runner DataflowRunner \
+#     --project your-project-id \
+#     --region us-central1 \
+#     --temp_location gs://your-bucket/temp \
+#     --input gs://your-bucket/input/*.txt \
+#     --output your-project-id:output_dataset.word_count_results \
+#     --num_workers 4 \
+#     --requirements_file requirements.txt
+
+
+# ============================================================================
+# 2. STREAMING PIPELINE DEPLOYMENT COMMANDS
+# ============================================================================
+
+# Local DirectRunner (for testing)
+# python streaming_event_processing_pipeline.py \
+#     --runner DirectRunner \
+#     --input_topic projects/your-project/topics/test-topic \
+#     --output_table your-project:test_dataset.test_output
+
+# Cloud Dataflow Runner with Streaming Engine
+# python streaming_event_processing_pipeline.py \
+#     --runner DataflowRunner \
+#     --project your-project-id \
+#     --region us-central1 \
+#     --temp_location gs://your-bucket/temp \
+#     --input_topic projects/your-project-id/topics/events-stream \
+#     --output_table your-project-id:streaming_dataset.real_time_events \
+#     --window_duration 60 \
+#     --window_type fixed \
+#     --num_workers 2 \
+#     --max_num_workers 10
+
+
+# ============================================================================
+# 3. COMPOSER/AIRFLOW DEPLOYMENT
+# ============================================================================
+
+# Copy DAG to Composer bucket
+# gsutil cp composer_dags/*.py gs://your-project-composer-bucket/dags/
+
+# Trigger DAG from command line
+# gcloud composer environments run your-environment \
+#     --location us-central1 \
+#     dags trigger -- batch_dataflow_word_count
+
+# View DAG logs
+# gcloud composer environments run your-environment \
+#     --location us-central1 \
+#     dags list-runs -- batch_dataflow_word_count
+
+
+# ============================================================================
+# 4. MONITORING AND DEBUGGING COMMANDS
+# ============================================================================
+
+# List active Dataflow jobs
+# gcloud dataflow jobs list --region us-central1
+
+# Get job details
+# gcloud dataflow jobs describe JOB_ID --region us-central1
+
+# View job logs
+# gcloud dataflow jobs log JOB_ID --region us-central1
+
+# Cancel a job
+# gcloud dataflow jobs cancel JOB_ID --region us-central1
+
+# Watch job metrics
+# gcloud dataflow jobs show JOB_ID --region us-central1 --full
+
+
+# ============================================================================
+# 5. TEMPLATE BUILDING
+# ============================================================================
+
+# Create Classic Template
+# python -m apache_beam.examples.complete_wordcount \
+#     --output gs://your-bucket/templates/wordcount \
+#     --template_location gs://your-bucket/templates/wordcount
+
+# Create Flex Template
+# gcloud dataflow flex-template build gs://your-bucket/templates/streaming-pipeline.json \
+#     --base-image=gcr.io/dataflow-service-producer/templates/java11:latest \
+#     --image-name=gcr.io/your-project/dataflow/streaming-pipeline:latest \
+#     --sdk-language=PYTHON
+
+
+# ============================================================================
+# 6. BIGQUERY SETUP COMMANDS
+# ============================================================================
+
+# Create dataset
+# bq mk --dataset \
+#     --location=US \
+#     your-project:streaming_dataset
+
+# Create table from schema
+# bq mk --table \
+#     your-project:streaming_dataset.real_time_events \
+#     schema.json
+
+# Stream data to BigQuery table
+# bq insert \
+#     your-project:streaming_dataset.real_time_events \
+#     data.json
+
+
+# ============================================================================
+# 7. PUB/SUB SETUP COMMANDS
+# ============================================================================
+
+# Create topic
+# gcloud pubsub topics create events-stream
+
+# Create subscription
+# gcloud pubsub subscriptions create events-subscription \
+#     --topic events-stream
+
+# Publish test message
+# gcloud pubsub topics publish events-stream \
+#     --message '{"event":"test","timestamp":"2024-01-01T00:00:00Z"}'
+
+
+# ============================================================================
+# 8. CLOUD STORAGE SETUP COMMANDS
+# ============================================================================
+
+# Create bucket
+# gsutil mb gs://your-bucket
+
+# Upload input data
+# gsutil cp local_data/*.txt gs://your-bucket/input/
+
+# Monitor bucket
+# gsutil ls -r gs://your-bucket/
+
+# Delete temporary files
+# gsutil rm -r gs://your-bucket/temp/*
