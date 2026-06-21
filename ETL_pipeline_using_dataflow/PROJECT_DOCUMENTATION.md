@@ -158,6 +158,7 @@ The GCP Dataflow Pipeline project provides a complete, end-to-end solution for d
                  (Cloud               (Cloud
                  Trace)               Logging)
 ```
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/bf7aec06-35b1-493f-90c0-ef5f44985ac2" />
 
 ### Component Interaction Flow
 
