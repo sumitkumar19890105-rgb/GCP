@@ -65,7 +65,7 @@ The GCP Dataflow Pipeline project provides a complete, end-to-end solution for d
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    GCP Dataflow Pipeline                            │
+│                    GCP Dataflow Pipeline                             │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐             │
@@ -78,16 +78,16 @@ The GCP Dataflow Pipeline project provides a complete, end-to-end solution for d
 │  └──────────────┘   └──────────────┘   └──────────────┘             │
 │                                                                     │
 │  ┌───────────────────────────────────────────────────────────────┐  │
-│  │        Cloud Composer Orchestration (Airflow)                 │  │
-│  │                                                               │  │
-│  │  • Batch DAG   • Streaming DAG   • ETL DAG                    │  │
-│  │  • Scheduling  • Monitoring      • Error Handling             │  │
+│  │        Cloud Composer Orchestration (Airflow)                │  │
+│  │                                                             │  │
+│  │  • Batch DAG   • Streaming DAG   • ETL DAG                  │  │
+│  │  • Scheduling  • Monitoring      • Error Handling           │  │
 │  └───────────────────────────────────────────────────────────────┘  │
 │                                                                     │
 │  ┌───────────────────────────────────────────────────────────────┐  │
-│  │       Google Cloud Platform Integration Layer                 │  │
-│  │                                                               │  │
-│  │  • Pub/Sub   • BigQuery   • Cloud Storage   • Dataflow        │  │
+│  │       Google Cloud Platform Integration Layer                │  │
+│  │                                                             │  │
+│  │  • Pub/Sub   • BigQuery   • Cloud Storage   • Dataflow      │  │
 │  └───────────────────────────────────────────────────────────────┘  │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
